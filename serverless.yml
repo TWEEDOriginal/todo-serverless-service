@@ -1,0 +1,56 @@
+service: todo-serverless-service
+
+frameworkVersion: '3'
+
+	
+configValidationMode: error
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-1
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - dynamodb:*
+          Resource:
+            - arn:aws:dynamodb:us-east-1:569056373740:table/TodoTable
+
+functions:
+  add_todo:
+    handler: src/addTodo.handler
+    events: # The Events that trigger this Function
+      - httpApi: 'POST /'
+
+  update_todo:
+    handler: src/updateTodo.handler
+    events: # The Events that trigger this Function
+      - httpApi: 'PUT /todo/{id}'
+
+  fetch_todos:
+    handler: src/fetchTodos.handler
+    events: # The Events that trigger this Function
+      - httpApi: 'GET /todos'
+
+  fetch_todo:
+    handler: src/fetchTodo.handler
+    events: # The Events that trigger this Function
+      - httpApi: 'GET /todo/{id}'
+
+resources: # CloudFormation template syntax from here on.
+  Resources:
+    TodoTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: TodoTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
