@@ -16,7 +16,7 @@ provider:
           Action:
             - dynamodb:*
           Resource:
-            - arn:aws:dynamodb:us-east-1:569056373740:table/TodoTable
+            - arn:aws:dynamodb:us-east-1:${aws:accountId}:table/TodoTable
 
 functions:
   add_todo:
